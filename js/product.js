@@ -13,13 +13,6 @@ fetch(`http://localhost:3000/api/products/${id}`)
 .then((response) => dataParam(response))
 
 function dataParam(kanap){
-    // const _id = kanap._id
-    // const imageUrl = kanap.imageUrl
-    // const name = kanap.name
-    // const altText = kanap.altText
-    // const colors = kanap.colors
-    // const description = kanap.description
-    // const price = kanap.price
 
     const { imageUrl, name, altText, colors, description, price } = kanap
     createImage(imageUrl, altText)
@@ -29,8 +22,6 @@ function dataParam(kanap){
     createColors(colors)
 }
 
-// Function pour l'image //
-
 function createImage(imageUrl, altText) {
     const image = document.createElement("img")
     image.src = imageUrl
@@ -39,29 +30,20 @@ function createImage(imageUrl, altText) {
     parent.appendChild(image)
 }
 
-
-// Function pour l'image //
-
 function createName(name) {
     const h1 = document.querySelector("#title")
     document.querySelector("#title").textContent = name
 }
-
-// Function pour l'image //
 
 function createPrice(price) {
     const span = document.querySelector("#price")
     document.querySelector("#price").textContent = price
 }
 
-// Function pour l'image //
-
 function createDescription(description){
 const desc = document.querySelector("#description")
 document.querySelector("#description").textContent = description
 }
-
-// Function pour l'image //
 
 function createColors(colors) {
     const select = document.querySelector("#colors")
@@ -73,7 +55,6 @@ function createColors(colors) {
     });
 }
 
-// addEventListener BUTTON FUNCTION //
 
 const button = document.querySelector("#addToCart") 
 button.addEventListener("click", onClick)

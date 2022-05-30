@@ -4,8 +4,8 @@ var cart = localStorage.getItem("cart");
 
     // FORM //
 
-    const orderButton = document.querySelector("#order")
-    orderButton.addEventListener("click", (e) => submitForm(e))
+const orderButton = document.querySelector("#order")
+orderButton.addEventListener("click", (e) => submitForm(e))
 
 if (cart == null) {
     cart = [];
@@ -14,25 +14,22 @@ if (cart == null) {
 }
 var total = 0;
 
+// création de la promesse 
+
 
 const promises = cart.map(cartItem => fetch("http://localhost:3000/api/products/" + cartItem.id).then(response => response.json()))
 
-//const cartiD = cart.map(({ id }) => id)
-// .filter, .reduce
-
-// cart.forEach((item) => promises)
+// mise en place de la promesse
 
 Promise.all(promises).then((kanaps) => {
     cart.forEach(eltCart => {
         var kanap = getKanapFromCart(eltCart, kanaps)
-        // createCartItemToCart(eltCart, kanap)
+        
 
         const article = createArticle(eltCart)
         const imageDiv = createImageDiv(kanap)
         article.appendChild(imageDiv)
         
-        
-        // const cartItemContent = createCartContent(cartItem, kanap)
 
         const cartItemContent = document.createElement("div")
         cartItemContent.classList.add("cart__item__content")
@@ -58,7 +55,7 @@ Promise.all(promises).then((kanaps) => {
         input.min = "1"
         input.max = "100"
         input.value = eltCart.quantity
-        // event = input courant
+        // création de l'event ( quantité )
         input.addEventListener("change", (event) => {
             eltCart.quantity = event.target.value
             updateData(cart, kanaps)
@@ -69,6 +66,7 @@ Promise.all(promises).then((kanaps) => {
 
         const div = document.createElement("div")
         div.classList.add("cart__item__content__settings__delete")
+        // création de l'event ( suppression )
         div.addEventListener("click", () => {
             const itemtoDelete = cart.findIndex(
                 (item) => item.id === eltCart.id && item.color === eltCart.color)
@@ -90,12 +88,12 @@ Promise.all(promises).then((kanaps) => {
     })
 
     displayTotalPrice(cart, kanaps)
-    // faut attendre que la boucle soit finit pour faire le total du panier
     displayTotalQuantity()
     
 })
         .catch(err => console.log(err))
 
+        // Function de la création du kanap
 function getKanapFromCart(cartItem, kanaps) {
     var result = null;
     kanaps.forEach(kanap => {
@@ -105,48 +103,12 @@ function getKanapFromCart(cartItem, kanaps) {
     })
     return result
 }
-
-    
-    
-// function displayItem(cartItem, kanap) {
-//     fetch(`http://localhost:3000/api/products/`+cartItem.id)
-//     .then((response) => response.json())
-//     .then((kanap) => {
-//// total = total + kanap.price
-// const article = createArticle(cartItem)
-// const imageDiv = createImageDiv(kanap)
-//         article.appendChild(imageDiv)
-        
-        
-//         const cartItemContent = createCartContent(cartItem, kanap)
-//         article.appendChild(cartItemContent)
-//         displayArticle(article)
-//         displayTotalQuantity()
-//         displayTotalPrice(total)
-//     })
-// }   
-
-
-// --------------- SETTINGS --------------- //
-
-
-
-
-
-    
-    // --------------- DATA --------------- //
-    
     
 function updateData(cart, kanaps) {
-    // for(i = 0; i < cart.length; i++){
-    //     if(cartItem.id == cart[i].id && cartItem.color == cart[i].color) {
-    //         cart[i].quantity+=Number(newValue)
-    //     }
-    // }
     displayTotalQuantity()
     displayTotalPrice(cart, kanaps)
     newDataLocalStorage(cart)
-}
+}   
 
 function deleteDataFromPage(cartItem) {
     document.querySelector(`article[data-id="${cartItem.id}"][data-color="${cartItem.color}"]`
@@ -158,10 +120,6 @@ function deleteDataFromPage(cartItem) {
 function newDataLocalStorage(cart) {
     localStorage.setItem("cart", JSON.stringify(cart))
 }
-
-
-
-
 
 
 // TOTAL //
@@ -178,20 +136,6 @@ function displayTotalPrice(cart, kanaps) {
             })
         })
     }
-    // var totalItemPrice
-    // if (oldQuantity < newQuantity) {
-    //     // ajoute un item
-    //     total += (newQuantity * price)
-    // }
-    // else if (totalItemPrice === 0) {
-    //     // si suppression de l'item
-    //     total -= oldQuantity * price
-    // }
-    // else {
-    //     // enlève un item
-    //     total -= newQuantity * price
-    // }
-   
     document.querySelector("#totalPrice").textContent = total
 }
 
@@ -209,7 +153,6 @@ function displayArticle(article) {
     document.querySelector("#cart__items").appendChild(article)
 
 }
-
 
 function createArticle(cartItem) {
     
@@ -239,8 +182,6 @@ function createCardDescription(cartItem, kanap) {
     return description
 }
 
-
-
 function createImageDiv(kanap) {
     const div = document.createElement("div")
     div.classList.add("cart__item__img")
@@ -253,18 +194,19 @@ function createImageDiv(kanap) {
     return div
 }
 
-// ---------- FORM ---------- //
+// ---------- FORMULAIRE ---------- //
 
 function submitForm(e) {
     e.preventDefault();
     if (cart.length === 0) {
-     alert("Please select product to buy") 
+     alert("Veuillez acheter un produit") 
      return
     }
 // si c'est invalid, tu vas pas plus loin
     if (inputInvalid()) return
     if (emailInvalid()) return
     
+    // Fetch en method POST permettant de récuperer l'orderId
     const body = questionBody()
     fetch("http://localhost:3000/api/products/order", {
         method: "POST",
@@ -282,32 +224,6 @@ function submitForm(e) {
         .catch ((err) => console.log(err))
 }
 
-function inputInvalid() {
-    const form = document.querySelector(".cart__order__form")
-    // Pour tout les inputs : 
-    const inputs = form.querySelectorAll("input")
-    inputs.forEach((input) => {
-        if(input.value === "") {
-            alert("Veuillez remplir tous les champs obligatoires")
-            // oui il est invalid
-            return true
-        }
-        // Non il est pas invalid
-        return false
-    })
-    
-}
-
-function emailInvalid() {
-    const email = document.querySelector("#email").value
-    const regex = /^[A-Za-z0-0+_.-]+@(.+)$/
-    if (regex.test(email) === false) {
-        alert("Veuillez remplir votre adresse email")
-        return true
-    }
-    return false
-}
-
 function questionBody() {
     const form = document.querySelector(".cart__order__form")
     const firstName = form.elements.firstName.value
@@ -315,6 +231,7 @@ function questionBody() {
     const address = form.elements.address.value
     const city = form.elements.city.value
     const email = form.elements.email.value
+
     const body = { 
         contact: {
             firstName: firstName,
@@ -329,3 +246,60 @@ function questionBody() {
     }
     return body
 }
+
+// Configuration des input invalid 
+function inputInvalid() {
+    firstNameError()
+    lastNameError()
+    cityError()
+    addressError()
+
+}
+
+function firstNameError() {
+        const firstName = document.querySelector("#firstName").value
+    if (firstName.trim() == "" || firstName.trim() <  2) {
+        document.getElementById("firstNameErrorMsg").innerHTML = "Veillez remplir votre prénom"
+        return true
+        } 
+}
+
+function lastNameError() {
+        const lastName = document.querySelector("#lastName").value
+        if (lastName.trim() == "" || lastName.trim() <  2) {
+            document.getElementById("lastNameErrorMsg").innerHTML = "Veillez remplir votre nom de famille"
+            return true
+        }    
+}
+    
+function addressError() {
+        const lastName = document.querySelector("#lastName").value
+        if (lastName.trim() == "" || lastName.trim() <  2) {
+            document.getElementById("addressErrorMsg").innerHTML = "Veillez remplir votre adresse"
+            return true
+        } 
+}
+
+function cityError() {
+        const city = document.querySelector("#city").value
+        if (city.trim() == "" || city.trim() < 2) {
+            document.getElementById("cityErrorMsg").innerHTML = "Veillez remplir votre ville"
+            return true
+        }
+        return false 
+}
+
+function emailInvalid() {
+    const email = document.querySelector("#email").value
+    if (email.trim() == "") {
+        document.getElementById("emailErrorMsg").innerHTML = "Veillez remplir votre adresse email"
+        return true
+    } 
+    const regex = /^[A-Za-z0-9+_.-]+@(.+)$/
+    if (regex.test(email) === false) {
+        document.getElementById("emailErrorMsg").innerHTML = "Le format de votre adresse email n'est pas correct"
+        return true
+    }
+    return false
+}
+

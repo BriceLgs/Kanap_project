@@ -16,6 +16,8 @@ function displayOrderId(orderId) {
     orderIdElement.textContent = orderId
 }
 
+// Une fois la page de confirmation charger ( remove du localStorage )
+
 function removeDataCache() {
     const cache = window.localStorage
     cache.clear()
