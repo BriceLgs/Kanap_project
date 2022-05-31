@@ -57,7 +57,7 @@ Promise.all(promises).then((kanaps) => {
         input.value = eltCart.quantity
         // création de l'event ( quantité )
         input.addEventListener("change", (event) => {
-            eltCart.quantity = event.target.value
+            eltCart.quantity = parseInt(event.target.value)
             updateData(cart, kanaps)
         })
         
@@ -203,8 +203,12 @@ function submitForm(e) {
      return
     }
 // si c'est invalid, tu vas pas plus loin
-    if (inputInvalid()) return
-    if (emailInvalid()) return
+    if (!inputInvalid()) {
+         return
+    } 
+    if (emailInvalid()) {
+        return
+   } 
     
     // Fetch en method POST permettant de récuperer l'orderId
     const body = questionBody()
@@ -219,7 +223,6 @@ function submitForm(e) {
     .then((data) => {
         const orderId = data.orderId
         window.location.href = "/html/confirmation.html" + "?orderId=" + orderId
-        return console.log(data)
     }) 
         .catch ((err) => console.log(err))
 }
@@ -249,11 +252,8 @@ function questionBody() {
 
 // Configuration des input invalid 
 function inputInvalid() {
-    firstNameError()
-    lastNameError()
-    cityError()
-    addressError()
-
+    
+    return  !firstNameError() && !lastNameError() && !cityError() && !addressError()
 }
 
 function firstNameError() {
@@ -262,6 +262,10 @@ function firstNameError() {
         document.getElementById("firstNameErrorMsg").innerHTML = "Veillez remplir votre prénom"
         return true
         } 
+        else {
+            document.getElementById("firstNameErrorMsg").innerHTML = ""
+            return false
+        }
 }
 
 function lastNameError() {
@@ -270,14 +274,22 @@ function lastNameError() {
             document.getElementById("lastNameErrorMsg").innerHTML = "Veillez remplir votre nom de famille"
             return true
         }    
+        else {
+            document.getElementById("lastNameErrorMsg").innerHTML = ""
+            return false
+        }
 }
     
 function addressError() {
-        const lastName = document.querySelector("#lastName").value
-        if (lastName.trim() == "" || lastName.trim() <  2) {
+        const address = document.querySelector("#address").value
+        if (address.trim() == "" || address.trim() <  2) {
             document.getElementById("addressErrorMsg").innerHTML = "Veillez remplir votre adresse"
             return true
         } 
+        else {
+            document.getElementById("addressErrorMsg").innerHTML = ""
+            return false
+        }
 }
 
 function cityError() {
@@ -286,7 +298,11 @@ function cityError() {
             document.getElementById("cityErrorMsg").innerHTML = "Veillez remplir votre ville"
             return true
         }
-        return false 
+        else {
+            document.getElementById("cityErrorMsg").innerHTML = ""
+            return false
+        }
+        
 }
 
 function emailInvalid() {
@@ -300,6 +316,7 @@ function emailInvalid() {
         document.getElementById("emailErrorMsg").innerHTML = "Le format de votre adresse email n'est pas correct"
         return true
     }
+    document.getElementById("emailErrorMsg").innerHTML = ""
     return false
 }
 
